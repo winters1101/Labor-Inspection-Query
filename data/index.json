@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-09-29 17:12",
+ "updatedAt": "2026-09-29 21:22",
  "source": "https://apiservice.mol.gov.tw/OdService/download/A17000000J-030225-svj",
  "municipalities": [
   "臺北市",
@@ -102,41 +102,66 @@
   "orgType"
  ],
  "years": {
+  "2015": {
+   "count": 2602,
+   "minDate": 20150105,
+   "maxDate": 20151231
+  },
+  "2016": {
+   "count": 7067,
+   "minDate": 20160103,
+   "maxDate": 20161230
+  },
+  "2017": {
+   "count": 5760,
+   "minDate": 20170103,
+   "maxDate": 20171229
+  },
+  "2018": {
+   "count": 6637,
+   "minDate": 20180102,
+   "maxDate": 20181228
+  },
+  "2019": {
+   "count": 5581,
+   "minDate": 20190102,
+   "maxDate": 20191231
+  },
   "2020": {
    "count": 7383,
    "minDate": 20200102,
    "maxDate": 20201231
   },
   "2021": {
-   "count": 7993,
+   "count": 8000,
    "minDate": 20210104,
    "maxDate": 20211230
   },
   "2022": {
-   "count": 8196,
+   "count": 8198,
    "minDate": 20220103,
    "maxDate": 20221230
   },
   "2023": {
-   "count": 9106,
+   "count": 9108,
    "minDate": 20230103,
    "maxDate": 20231229
   },
   "2024": {
-   "count": 9067,
+   "count": 9070,
    "minDate": 20240102,
    "maxDate": 20241231
   },
   "2025": {
-   "count": 8959,
+   "count": 8962,
    "minDate": 20250102,
    "maxDate": 20251231
   },
   "2026": {
-   "count": 6032,
+   "count": 6045,
    "minDate": 20260102,
    "maxDate": 20260914
   }
  },
- "total": 56736
+ "total": 84413
 }
