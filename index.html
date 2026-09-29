@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>勞動檢查違規查詢</title>
+  <meta name="description" content="查詢各直轄市、縣市政府公布之違反勞動基準法事業單位：產業別、違反條文與罰鍰金額。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <div class="brand">
+        <div class="hanko" aria-hidden="true">勞</div>
+        <h1>勞動檢查違規查詢</h1>
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="切換深淺色">深色</button>
+      </div>
+      <p class="lede">
+        各直轄市、縣市政府勞動局處依《勞動基準法》第 80 條之 1，公布違法雇主的名稱、違反條文與罰鍰。
+        本頁彙整勞動部「違反勞動法令事業單位（雇主）查詢系統」的公開資料，依地區與期間統計
+        <b>哪些產業、哪些事業單位</b>最常違法，供初次就業、二度就業的朋友參考。
+      </p>
+      <p class="meta-line" id="metaLine">資料載入中…</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <form class="panel" id="searchForm" autocomplete="off">
+      <div class="fields">
+        <div class="field f-county">
+          <label for="county">直轄市／縣市政府</label>
+          <select id="county"></select>
+        </div>
+        <div class="field f-from">
+          <span class="label" id="fromLabel">查詢起始（民國）</span>
+          <div class="ym" role="group" aria-labelledby="fromLabel">
+            <select id="fromY" aria-label="起始年"></select><span>年</span>
+            <select id="fromM" aria-label="起始月"></select><span>月</span>
+          </div>
+        </div>
+        <div class="field f-to">
+          <span class="label" id="toLabel">查詢結束（民國）</span>
+          <div class="ym" role="group" aria-labelledby="toLabel">
+            <select id="toY" aria-label="結束年"></select><span>年</span>
+            <select id="toM" aria-label="結束月"></select><span>月</span>
+          </div>
+        </div>
+        <div class="field f-industry">
+          <label for="industry">產業別（推估）</label>
+          <select id="industry"></select>
+        </div>
+        <div class="field f-keyword">
+          <label for="keyword">事業單位名稱關鍵字（選填）</label>
+          <input type="search" id="keyword" placeholder="例：保全、醫院、某某股份有限公司">
+        </div>
+        <div class="field f-actions">
+          <span class="label" aria-hidden="true">&nbsp;</span>
+          <div class="btn-row">
+            <button class="btn" type="submit">查詢</button>
+            <button class="btn ghost" type="button" id="resetBtn">重設</button>
+          </div>
+        </div>
+      </div>
+      <div class="chips" id="chips" aria-live="polite"></div>
+      <p class="status" id="status" role="status"></p>
+    </form>
+
+    <div id="results" hidden>
+      <section class="block" aria-labelledby="h-summary">
+        <h2 id="h-summary">查詢概要</h2>
+        <p class="sub" id="summarySub"></p>
+        <div class="tiles">
+          <div class="tile"><div class="k">裁罰件數</div><div class="v" id="tCount">—</div></div>
+          <div class="tile"><div class="k">事業單位數</div><div class="v" id="tEntities">—</div></div>
+          <div class="tile money"><div class="k">罰鍰總額</div><div class="v" id="tAmount">—</div></div>
+          <div class="tile"><div class="k">平均每件罰鍰</div><div class="v" id="tAvg">—</div></div>
+        </div>
+      </section>
+
+      <section class="block grid-2">
+        <div>
+          <h2>產業別統計</h2>
+          <p class="sub">依事業單位名稱推估產業；點選可篩選明細。長條為件數。</p>
+          <ol class="rank" id="industryRank"></ol>
+        </div>
+        <div>
+          <h2>違反條文排行</h2>
+          <p class="sub">一件處分可能同時違反多條；點選可篩選明細。</p>
+          <ol class="rank" id="lawRank"></ol>
+        </div>
+      </section>
+
+      <section class="block" aria-labelledby="h-repeat">
+        <h2 id="h-repeat">重複違規事業單位</h2>
+        <p class="sub">查詢期間內被裁罰 2 次以上者，依次數排序（前 30 名）。點名稱可只看該單位的明細。</p>
+        <div class="table-wrap cards">
+          <table>
+            <thead><tr><th>#</th><th>事業單位</th><th>地區</th><th>產業別（推估）</th><th class="num">次數</th><th class="num">罰鍰合計</th><th>最近處分</th></tr></thead>
+            <tbody id="repeatBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="block" aria-labelledby="h-detail">
+        <div class="toolbar">
+          <div>
+            <h2 id="h-detail">裁罰明細</h2>
+            <p class="sub" id="detailSub" style="margin:0"></p>
+          </div>
+          <button class="btn ghost" type="button" id="csvBtn">下載 CSV</button>
+        </div>
+        <div class="table-wrap cards">
+          <table>
+            <thead>
+              <tr>
+                <th class="sortable" data-sort="date">處分日期</th>
+                <th>地區</th>
+                <th>事業單位／負責人</th>
+                <th>產業別（推估）</th>
+                <th>違反條文與內容</th>
+                <th class="num sortable" data-sort="amount">罰鍰（元）</th>
+              </tr>
+            </thead>
+            <tbody id="detailBody"></tbody>
+          </table>
+        </div>
+        <div class="pager" id="pager"></div>
+      </section>
+    </div>
+
+    <section class="block notes" aria-labelledby="h-notes">
+      <h2 id="h-notes">資料來源與說明</h2>
+      <ul class="sources">
+        <li><a href="https://announcement.mol.gov.tw/" target="_blank" rel="noopener">違反勞動法令事業單位（雇主）查詢系統</a><small>勞動部 — 各地方政府公布名單的官方彙整系統</small></li>
+        <li><a href="https://apiservice.mol.gov.tw/OdService/rest/dataset/109896" target="_blank" rel="noopener">開放資料：違反勞動基準法</a><small>勞動部開放資料 A17000000J-030225-svj（本站資料來源）</small></li>
+        <li><a href="https://www.mol.gov.tw/1607/28162/28166/28246/nodelist" target="_blank" rel="noopener">違反勞動法令公布專區</a><small>勞動部全球資訊網</small></li>
+        <li><a href="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0030001" target="_blank" rel="noopener">勞動基準法全文</a><small>全國法規資料庫</small></li>
+      </ul>
+      <ol>
+        <li>「查詢期間」以<b>處分日期</b>為準（民國年月）。公告日期通常晚於處分日期數週至數月，最近月份的資料可能尚未完整。</li>
+        <li>官方資料<b>沒有行業別欄位</b>，本頁「產業別」係以事業單位名稱關鍵字推估，僅供參考；無法判別者歸入「其他／無法判別」。</li>
+        <li>一件處分若違反多條條文，在「違反條文排行」中各條都會計入一次，罰鍰則以整件處分金額計。</li>
+        <li>名單中的處分可能仍在行政救濟中（見備註），亦可能事後撤銷，實際情形請以主管機關公告為準。</li>
+        <li>本站為民間整理之非官方查詢工具，資料每日自勞動部開放資料自動更新。</li>
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">資料來源：勞動部開放資料（政府資料開放授權條款－第 1 版）。本站與勞動部及各地方政府無隸屬關係。</div>
+  </footer>
+
+  <script src="assets/laws.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

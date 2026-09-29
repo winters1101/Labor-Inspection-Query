@@ -1,0 +1,64 @@
+name: 更新資料並部署網站
+
+on:
+  schedule:
+    - cron: "17 20 * * *"   # 每日台灣時間 04:17
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 單元測試
+        run: python -m unittest discover -s tests -v
+
+      - name: 下載勞動部開放資料並更新 data/
+        if: github.event_name != 'push'
+        # 官方網站偶有連線失敗；失敗時沿用既有資料照常部署
+        continue-on-error: true
+        run: python scripts/build_data.py
+
+      - name: 提交更新後的資料
+        if: github.event_name != 'push'
+        run: |
+          if [ -n "$(git status --porcelain data)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data
+            git commit -m "資料更新 $(TZ=Asia/Taipei date '+%Y-%m-%d')"
+            git push
+          else
+            echo "資料無變動"
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
