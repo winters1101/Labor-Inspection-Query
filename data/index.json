@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-23 08:51",
+ "updatedAt": "2026-11-28 10:40",
  "source": "https://apiservice.mol.gov.tw/OdService/download/A17000000J-030225-svj",
  "municipalities": [
   "臺北市",
@@ -153,15 +153,15 @@
    "maxDate": 20241231
   },
   "2025": {
-   "count": 8973,
+   "count": 8977,
    "minDate": 20250102,
    "maxDate": 20251231
   },
   "2026": {
-   "count": 6963,
+   "count": 7798,
    "minDate": 20260102,
-   "maxDate": 20261022
+   "maxDate": 20261126
   }
  },
- "total": 85342
+ "total": 86181
 }
